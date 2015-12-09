@@ -26,6 +26,20 @@ class TestPullRequestsService(TestCase):
             ('get', _('repos/user/repo/pulls'))
         )
 
+    def test_LIST_ordered(self, reqm):
+        reqm.return_value = mock_response_result()
+        order_args = dict(sort='updated', direction='desc')
+        self.service.list(**order_args).all()
+
+        self.assertEqual(
+            reqm.call_args[0],
+            ('get', _('repos/user/repo/pulls'))
+        )
+
+        params = reqm.call_args[1]['params']
+        for key, value in order_args.iteritems():
+            self.assertEqual(params[key], value)
+
     def test_GET(self, reqm):
         reqm.return_value = mock_response()
         self.service.get(123)
